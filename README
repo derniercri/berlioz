@@ -1,0 +1,13 @@
+-- This file must be rewritted by a truly English guy ! Sorry !
+
+Berlioz : a small concurrent file reader
+ /!\ use with erl -smp +S N
+     (for multicore prelude, where N is the number of desired schedulers)
+
+*  API
+berlioz:open("FilePath") returns a file handler
+berlioz:lines_of(Handler) gets all lines of the handled files
+
+A file use a parallel map for reading (as bitstreams), you can read
+only once the file (after the file is consumed).
+ 
