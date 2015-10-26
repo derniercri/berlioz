@@ -1,0 +1,14 @@
+{application, berlioz,
+ [
+  {description, "An Erlang berlioz library"},
+  {vsn, "1"},
+  {modules, [
+             berlioz
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.
