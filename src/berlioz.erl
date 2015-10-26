@@ -138,7 +138,6 @@ bitstream({Pid, Reference}) ->
 
 last_line_of(Binaries) -> last_nl_of(Binaries, size(Binaries)-1).
 last_nl_of(Binaries, Size) ->
-    io:format("pie~n"),
     case Binaries of 
         <<Lines:Size/binary, 10, Acc/binary>> -> {Lines, Acc};
         _ -> if Size =< 0 -> Binaries;
