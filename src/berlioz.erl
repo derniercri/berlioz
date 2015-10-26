@@ -114,7 +114,7 @@ lines_of({Pid, Reference}) ->
 
 deflate(Binaries) ->
     lists:foldl(
-      fun(Elt, Acc) -> <<Acc/binary, Elt/binary>> end,
+      fun(Elt, Acc) -> <<Acc/binary, 10, Elt/binary>> end,
       << >>, 
       Binaries
      ).
