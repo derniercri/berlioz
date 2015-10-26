@@ -113,16 +113,16 @@ lines_of({Pid, Reference}) ->
     end.
 
 deflate(Binaries) ->
-    [_|Tl] = lists:foldl(
-               fun(Elt, Acc) -> <<Acc/binary, 10, Elt/binary>> end,
-               << >>, 
-               Binaries
-              ),
-    Tl.
+    lists:foldl(
+      fun(Elt, Acc) -> <<Acc/binary, 10, Elt/binary>> end,
+      << >>, 
+      Binaries
+     ).
 
 to_string(IoDevice) ->
     L = lines_of(IoDevice),
-    binary_to_list(deflate(L)).
+    [_|T] = binary_to_list(deflate(L)),
+    T.
 
 bitstream({Pid, Reference}) ->
     Pid ! {char_of, Reference, self()},
