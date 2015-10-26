@@ -113,11 +113,13 @@ lines_of({Pid, Reference}) ->
     end.
 
 deflate(Binaries) ->
-    lists:foldl(
-      fun(Elt, Acc) -> <<Acc/binary, 10, Elt/binary>> end,
-      << >>, 
-      Binaries
-     ).
+    B = 
+        lists:foldl(
+          fun(Elt, Acc) -> <<Acc/binary, 10, Elt/binary>> end,
+          << >>, 
+          Binaries
+         ),
+     <<B/binary, 10>>.
 
 to_string(IoDevice) ->
     L = lines_of(IoDevice),
