@@ -31,7 +31,10 @@
 -export([
          open/1,
          lines_of/1, 
-         close/1
+         close/1,
+         bitstream/1, 
+         deflate/1, 
+         to_string/1
         ]).
 
 -compile([native]).
@@ -109,9 +112,33 @@ lines_of({Pid, Reference}) ->
         {'DOWN', Reference, _, Pid, _} -> fault(close_file)
     end.
 
-last_line_of(Binaries) -> last_nl_of(Binaries, size(Binaries)-1).
+deflate(Binaries) ->
+    lists:foldl(
+      fun(Elt, Acc) -> <<Acc/binary, Elt/binary>> end,
+      << >>, 
+      Binaries
+     ).
 
+to_string(IoDevice) ->
+    L = lines_of(IoDevice),
+    binary_to_list(deflate(L)).
+
+bitstream({Pid, Reference}) ->
+    Pid ! {char_of, Reference, self()},
+    receive
+        {{Data, _Prefix}, Reference} -> 
+            lists:foldl(
+              fun(X, SUM) -> <<SUM/binary, X/binary>> end, 
+              <<>>, Data
+             );
+        {eof, Reference} -> eof;
+        {'DOWN', Reference, _, Pid, _} -> fault(close_file)
+    end.
+
+
+last_line_of(Binaries) -> last_nl_of(Binaries, size(Binaries)-1).
 last_nl_of(Binaries, Size) ->
+    io:format("pie~n"),
     case Binaries of 
         <<Lines:Size/binary, 10, Acc/binary>> -> {Lines, Acc};
         _ -> if Size =< 0 -> Binaries;
@@ -134,6 +161,9 @@ treat_lines(File, Acc) ->
     {Data, AccR} = process_lines(File, Acc),
     receive
         {lines_of, Reference, Pid} -> 
+            Pid ! {Data, Reference},
+            treat_lines(File, AccR);
+        {char_of, Reference, Pid} ->
             Pid ! {Data, Reference},
             treat_lines(File, AccR);
         stop -> file:close(File)
